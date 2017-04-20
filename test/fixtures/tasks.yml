@@ -2,6 +2,10 @@
 
 one:
   content: MyString
+  status: MyString
+  user: one
 
 two:
   content: MyString
+  status: MyString
+  user: two

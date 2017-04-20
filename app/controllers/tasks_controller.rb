@@ -1,6 +1,15 @@
 class TasksController < ApplicationController
+  before_action :require_user_logged_in, only: [:new, :create ]
+  before_action :require_authentication, only: [:show, :edit, :update, :destroy ]
+
   def index
-    @tasks = Task.all
+    @alltasks = Task.all
+    @allusers = User.all
+    if logged_in?
+      @user = current_user
+      @task = current_user.tasks.build  # form_for 用
+      @tasks = current_user.tasks.order('created_at DESC').page(params[:page])
+    end
   end
 
   def show
@@ -12,7 +21,7 @@ class TasksController < ApplicationController
   end
 
   def create
-    @task = Task.new(task_params)
+    @task = current_user.tasks.build(task_params)
 
     if @task.save
       flash[:success] = 'Task が正常に投稿されました'
@@ -39,7 +48,6 @@ class TasksController < ApplicationController
       render :edit
     end
 
-
   end
 
   def destroy
@@ -62,7 +70,7 @@ class TasksController < ApplicationController
 
   # Strong Parameter
   def task_params
-    params.require(:task).permit(:content, :status)
+    params.require(:task).permit(:content, :status, :user_id)
   end
 
 
